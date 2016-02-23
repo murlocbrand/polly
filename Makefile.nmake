@@ -1,4 +1,6 @@
-PROGRAM = plugga.exe
+PROGRAM = polly.exe
+
+V7_FLAGS = -DV7_BUILD_PROFILE=3 -DV7_ENABLE_FILE -DV7_ENABLE_SOCKET -DV7_ENABLE_CRYPTO
 
 NET_PATH = src/ip
 NET_PATH_OS = $(NET_PATH)/win32
@@ -10,10 +12,10 @@ OSC_PATH = src/osc
 OSCSRC = $(OSC_PATH)/OscOutboundPacketStream.cpp $(OSC_PATH)/OscPrintReceivedElements.cpp $(OSC_PATH)/OscReceivedElements.cpp $(OSC_PATH)/OscTypes.cpp
 OSCOBJ = bin/OscOutboundPacketStream.obj bin/OscPrintReceivedElements.obj bin/OscReceivedElements.obj bin/OscTypes.obj
 
-SRC = $(NETSRC) $(OSCSRC) src/plugga.cpp
+SRC = $(NETSRC) $(OSCSRC) src/polly.cpp
 
 # names of object files
-OBJ = $(NETOBJ) $(OSCOBJ) bin/plugga.obj
+OBJ = $(NETOBJ) $(OSCOBJ) bin/polly.obj bin/v7.obj
 
 # Use the Microsoft C++ Compiler
 CPP = cl.exe
@@ -22,8 +24,14 @@ CPPFLAGS = /nologo /RTC1 /EHsc /c /I src
 LINK = link.exe
 LINKFLAGS = /nologo ws2_32.lib Winmm.lib /OUT:$@
 
-bin/$(PROGRAM): $(OBJ)
+bin/$(PROGRAM): bin $(OBJ)
 	$(LINK) $(LINKFLAGS) $(OBJ)
+
+bin/v7.obj: src/v7.c
+	$(CPP) $(CPPFLAGS) /Fo:bin/ src/v7.c $(V7_FLAGS)
+
+bin:
+	mkdir bin
 
 # link objects
 $(NETOBJ): $(NETSRC)
@@ -34,6 +42,7 @@ $(OSCOBJ): $(OSCSRC)
 
 {src/}.cc{bin/}.obj:
 	$(CPP) $(CPPFLAGS) $< /Fo:$@
+
 {src/}.cpp{bin/}.obj:
 	$(CPP) $(CPPFLAGS) $< /Fo:$@
 
