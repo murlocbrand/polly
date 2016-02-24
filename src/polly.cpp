@@ -30,10 +30,9 @@
 
 std::string slurp(const std::string path)
 {
+	std::ifstream in(path);
 	return std::string(
-		(std::istreambuf_iterator<char>(
-			std::ifstream(path)
-		)),
+		(std::istreambuf_iterator<char>(in)),
 		std::istreambuf_iterator<char>()
 	);
 }
